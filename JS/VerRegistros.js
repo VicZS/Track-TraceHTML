@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
+
+    /////////////////////Registro Prueba/////////////////////
+    if (!localStorage.getItem("registros")) {
+    const ejemplo = {
+        fecha: "2025-08-03",
+        tipoCamion: "THORTON",
+        tarimas: "14",
+        proveedor: "Proveedor B",
+        eslingas: "Sí",
+        turno: "Segundo Turno",
+        almacenista: "Juan Pérez",
+        comentarios: "Carga urgente con productos frágiles"
+    };
+
+    localStorage.setItem("registros", JSON.stringify([ejemplo]));
+    }
+
+    /////////////////////////////////
+
       const registroSelect = document.getElementById('registroSelect');
       const detalle = document.getElementById('detalleRegistro');
       const registros = JSON.parse(localStorage.getItem("registros")) || [];
