@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realizar Registro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-light mb-4 shadow-sm">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+            <!-- Logo principal -->
+            <div class="d-flex align-items-center">
+                <img src="./multimedia/iconos/registro-en-linea.png" alt="Logo" class="me-3" style="width:48px; height:48px;">
+                <h2>Formulario de Registro</h2>
+            </div>
+
+            <!-- Botón de volver -->
+            <a href="./index.html" class="btn btn-outline-secondary d-flex align-items-center">
+                <img src="./multimedia/iconos/volver.png" alt="Volver" style="width:24px; height:24px;">
+                <span class="ms-2">Volver</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <form id="registroForm">
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="tipoCamion" class="form-label">Tipo de Camión</label>
+                <select class="form-select" id="tipoCamion" required>
+                    <option value="">Seleccionar...</option>
+                    <option>CAM 3.5</option>
+                    <option>THORTON</option>
+                    <option>TRAILER RABON</option>
+                    <option>TRAILER 53</option>
+                </select>
+            </div>
+            
+            <p><strong>Capacidad:</strong> <span id="capacidadMaxima">0 KG</span></p>
+
+            <div class="mb-3">
+                <label for="tarimas" class="form-label">Tarimas a Enviar</label>
+                <input type="number" class="form-control" id="tarimas" min="1" required disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="proveedor" class="form-label">Proveedor</label>
+                <select class="form-select" id="proveedor" required disabled>
+                    <option value="">Seleccionar...</option>
+                    <option>Proveedor A</option>
+                    <option>Proveedor B</option>
+                    <option>Proveedor C</option>
+                    <option>Proveedor D</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="eslingas" class="form-label">Eslingas</label>
+                <select class="form-select" id="eslingas" required disabled>
+                    <option value="">Seleccionar...</option>
+                    <option>Si</option>
+                    <option>No</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="turno" class="form-label">Turno</label>
+                <select class="form-select" id="turno" required disabled>
+                    <option value="">Seleccionar...</option>
+                    <option>Primer Turno</option>
+                    <option>Segundo Turno</option>
+                    <option>Tercer Turno</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="almacenista" class="form-label">Nombre del Almacenista</label>
+                <input type="text" class="form-control" id="almacenista" required disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="comentarios" class="form-label">Comentarios</label>
+                <textarea class="form-control" id="comentarios" rows="3" disabled></textarea>
+            </div>
+
+            <p><strong>Ocupación:</strong> <span id="capacidadOcupada">0/0</span></p>
+            <br>
+            <div class="d-flex align-items-center mt-4" id="camionCompleto">
+                <img src="./multimedia/img/CabinaCamion.png" alt="Cabina del Camión" style="height: 100px;">
+                
+                <div id="panelCamion" class="ms-2">
+                </div>
+            </div>
+            <br>
+
+            <button type="submit" class="btn btn-primary" id="crearRegistroBtn" disabled>Crear Registro</button>
+        </form>
+    </div>
+
+    
+    
+
+    <script src="./JS/RealizarRegistro.js"></script>
+    
+</body>
+</html>
