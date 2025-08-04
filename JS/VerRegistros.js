@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const detalle = document.getElementById('detalleRegistro');
       const registros = JSON.parse(localStorage.getItem("registros")) || [];
 
+
       const configCamiones = {
         "CAM 3.5": { espacios: 6 },
         "THORTON": { espacios: 10 },
@@ -40,6 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedIndex = this.value;
         if (selectedIndex === '') {
           detalle.style.display = 'none';
+            document.getElementById('exportarPDF').disabled = true;
+            document.getElementById('exportarExcel').disabled = true;
+            
           return;
         }
 
@@ -56,6 +60,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('infoComentarios').textContent = registro.comentarios || '-';
 
         generarVisualizacionCamion(configCamiones[registro.tipoCamion].espacios, parseInt(registro.tarimas));
+
+        document.getElementById('exportarPDF').disabled = false;
+        document.getElementById('exportarExcel').disabled = false;
+        
       });
 
       function generarVisualizacionCamion(espacios, tarimas) {
@@ -123,4 +131,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
         panelCamion.appendChild(grid);
       }
+
     });
