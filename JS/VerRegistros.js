@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
         eslingas: "Sí",
         turno: "Segundo Turno",
         almacenista: "Juan Pérez",
-        comentarios: "Carga urgente con productos frágiles, revisar antes de cargar.awdawd awdawvad agawdawdawdwage  a dwdawdaw dawwadaw"
+        comentarios: "Carga urgente con productos frágiles, revisar antes de cargar. Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius vel hic nobis facilis esse cum quidem aspernatur, veniam dolore asperiores repellendus error enim distinctio minus ex cumque nam, deserunt ratione? "
+        
     };
     localStorage.setItem("registros", JSON.stringify([ejemplo]));
 }
