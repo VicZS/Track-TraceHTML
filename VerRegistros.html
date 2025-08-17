@@ -26,7 +26,12 @@
     <div class="container mt-4">
         <div class="container mb-5">
 
+            <div class="mt-4 mb-5 d-flex gap-3 justify-content-end p-1"  >
+            <button class="btn btn-success" id="exportarTodosExcel">Generar Reporte de Todos los Registros</button>
+            </div>
+
             <div class="mb-4">
+                
 
             <label for="filtroReporte" class="form-label">Generar Reporte:</label>
             <select class="form-select" id="filtroReporte">
@@ -50,6 +55,7 @@
             </div>
 
             <button class="btn btn-success" id="generarReporteExcel" disabled>Generar Reporte Excel</button>
+            
 
             <div class="mb-4">
             <label for="registroSelect" class="form-label">Selecciona un registro:</label>
@@ -75,7 +81,6 @@
         </div>
     </div>
     <div class="mt-4 mb-5 d-flex gap-3 justify-content-end p-1"  >
-    <!-- <button class="btn btn-danger" id="exportarPDF" disabled>Exportar como PDF</button> -->
     <button class="btn btn-success" id="exportarExcel" disabled>Exportar como Excel</button>
     </div>
 <script src="./JS/VerRegistros.js"></script>

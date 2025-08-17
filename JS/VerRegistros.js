@@ -16,9 +16,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return res.json();
         })
         .then(data => {
-            // 🔹 Ordenar descendente (fecha más reciente primero)
+            // 🔹 Ordenar descendente por ID (mayor ID primero)
             registros = data.map((r, i) => ({ id: i + 1, ...r }))
-                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                .sort((a, b) => b.id - a.id);
             rellenarSelect(registros);
         })
         .catch(error => {
@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedIndex = this.value;
         if (selectedIndex === '') {
             detalle.style.display = 'none';
-            // document.getElementById('exportarPDF').disabled = true;
             document.getElementById('exportarExcel').disabled = true;
             return;
         }
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         generarVisualizacionCamion(configCamiones[registro.tipoCamion].espacios, parseInt(registro.tarimas));
 
-        // document.getElementById('exportarPDF').disabled = false;
+        
         document.getElementById('exportarExcel').disabled = false;
     });
 
@@ -178,8 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Mostrar/Ocultar filtros según selección
     filtroReporte.addEventListener("change", () => {
         if (filtroReporte.value === "rango") {
-            filtrosRango.style.display = "flex"; // mostrar inputs de fecha
-            generarReporteExcel.disabled = true; // esperar a que se elijan fechas
+            filtrosRango.style.display = "flex";
+            generarReporteExcel.disabled = true; 
         } else if (filtroReporte.value !== "") {
             filtrosRango.style.display = "none";
             generarReporteExcel.disabled = false; // habilitar el botón
@@ -332,6 +331,57 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
+    document.getElementById("exportarTodosExcel").addEventListener("click", function () {
+        if (registros.length === 0) return alert("No hay registros para exportar");
 
+        const nombreArchivo = "Reporte completo";
+
+        XlsxPopulate.fromBlankAsync()
+            .then(workbook => {
+                const sheet = workbook.sheet("Sheet1");
+
+                const headers = ["ID", "Fecha", "Tipo de Camión", "Tarimas Enviadas", "Proveedor", "Eslingas", "Turno", "Almacenista", "Comentarios", "Porcentaje Ocupación"];
+                headers.forEach((h, i) => {
+                    sheet.cell(1, i + 1).value(h).style({ bold: true, horizontalAlignment: "center", border: true });
+                });
+
+                registros.forEach((registro, idx) => {
+                    const fila = idx + 2;
+                    const capacidad = (configCamiones[registro.tipoCamion]?.espacios || 1) * 3;
+                    const porcentaje = ((registro.tarimas / capacidad) * 100).toFixed(2) + "%";
+
+                    const valores = [
+                        registro.id,
+                        registro.fecha,
+                        registro.tipoCamion,
+                        registro.tarimas,
+                        registro.proveedor,
+                        registro.eslingas,
+                        registro.turno,
+                        registro.almacenista,
+                        registro.comentarios || "-",
+                        porcentaje
+                    ];
+
+                    valores.forEach((valor, col) => {
+                        sheet.cell(fila, col + 1).value(valor).style({ border: true, horizontalAlignment: "center" });
+                    });
+                });
+
+                headers.forEach((_, i) => sheet.column(i + 1).width(22));
+
+                return workbook.outputAsync();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${nombreArchivo}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            });
+    });
 
 });
