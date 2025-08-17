@@ -1,30 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-
-    ///////////////////// Registro de Prueba /////////////////////
-    if (!localStorage.getItem("registros")) {
-    const ejemplo = {
-        id: 1,
-        fecha: "2025-08-03",
-        tipoCamion: "TRAILER RABON",
-        tarimas: "40",
-        proveedor: "Proveedor B",
-        eslingas: "Sí",
-        turno: "Segundo Turno",
-        almacenista: "Juan Pérez",
-        comentarios: "Carga urgente con productos frágiles, revisar antes de cargar. Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius vel hic nobis facilis esse cum quidem aspernatur, veniam dolore asperiores repellendus error enim distinctio minus ex cumque nam, deserunt ratione? "
-        
-    };
-    localStorage.setItem("registros", JSON.stringify([ejemplo]));
-}
-
-
-    /////////////////////////////////////////////////////////////
-
-    const registroSelect = document.getElementById('registroSelect');
+const registroSelect = document.getElementById('registroSelect');
     const detalle = document.getElementById('detalleRegistro');
-    const registros = JSON.parse(localStorage.getItem("registros")) || [];
-
-
     const configCamiones = {
         "CAM 3.5": { espacios: 6 },
         "THORTON": { espacios: 10 },
@@ -32,13 +8,32 @@ document.addEventListener('DOMContentLoaded', function () {
         "TRAILER 53": { espacios: 24 },
     };
 
-    // Rellenar select
-    registros.forEach((registro, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = `ID ${registro.id} - ${registro.fecha} - ${registro.tipoCamion}`;
-        registroSelect.appendChild(option);
-    });
+    let registros = [];
+
+    // 🔄 Cargar registros desde el backend
+    fetch('/registros')
+        .then(res => {
+            if (!res.ok) throw new Error('Error al obtener registros');
+            return res.json();
+        })
+        .then(data => {
+            registros = data.map((r, i) => ({ id: i + 1, ...r })); // Asignar ID si no viene
+            rellenarSelect(registros);
+        })
+        .catch(error => {
+            console.error('Error al cargar registros:', error);
+            alert('No se pudieron cargar los registros');
+        });
+
+    function rellenarSelect(registros) {
+        registroSelect.innerHTML = '<option value="">Seleccionar...</option>';
+        registros.forEach((registro, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `ID ${registro.id} - ${registro.fecha} - ${registro.tipoCamion}`;
+            registroSelect.appendChild(option);
+        });
+    }
 
     registroSelect.addEventListener('change', function () {
         const selectedIndex = this.value;
@@ -70,13 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function generarVisualizacionCamion(espacios, tarimas) {
         const panelCamion = document.getElementById('panelCamion');
         panelCamion.innerHTML = '';
-
         const columnas = Math.ceil(espacios / 2);
         const distribucion = Array.from({ length: 2 }, () => Array(columnas).fill(0));
-
         let restante = tarimas;
 
-        // Paso 1: colocar 1 tarima por espacio
         outer1:
         for (let c = 0; c < columnas; c++) {
             for (let r = 0; r < 2; r++) {
@@ -86,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Paso 2-3: estibar hasta 3
         let niveles = 2;
         while (restante > 0 && niveles <= 3) {
             for (let c = 0; c < columnas && restante > 0; c++) {
@@ -125,15 +116,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     case 2: cell.style.backgroundColor = 'khaki'; break;
                     case 3: cell.style.backgroundColor = 'lightgreen'; break;
                 }
-
                 grid.appendChild(cell);
             }
         }
-
         panelCamion.appendChild(grid);
     }
-
-    // Exportar como PDF
     document.getElementById("exportarPDF").addEventListener("click", async function () {
         const { jsPDF } = window.jspdf;
 
@@ -153,26 +140,19 @@ document.addEventListener('DOMContentLoaded', function () {
         doc.text(`Eslingas: ${registro.eslingas}`, 10, y += 10);
         doc.text(`Turno: ${registro.turno}`, 10, y += 10);
         doc.text(`Almacenista: ${registro.almacenista}`, 10, y += 10);
-        // Comentario con ajuste de texto
         const comentarioTexto = `Comentarios: ${registro.comentarios || "-"}`;
         const comentarioAnchoMaximo = 180; // ancho en mm
         const lineasComentario = doc.splitTextToSize(comentarioTexto, comentarioAnchoMaximo);
         doc.text(lineasComentario, 10, y += 10);
-        y += lineasComentario.length * 7; // ajusta el y con base en el número de líneas
+        y += lineasComentario.length * 7;
 
-        if (y > 250) { // cuando se acerque al final de la hoja
+        if (y > 250) { 
             doc.addPage();
             y = 10;
         }
-
-
-
         const camionContainer = document.querySelector("#detalleRegistro .d-flex");
-
         await html2canvas(camionContainer).then(canvas => {
             const imgData = canvas.toDataURL("image/png");
-
-            // Proporción automática
             const imgWidth = 180;
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
@@ -181,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Exportar como Excel
     document.getElementById("exportarExcel").addEventListener("click", function () {
     const selectedIndex = registroSelect.value;
     if (selectedIndex === '') return alert("Selecciona un registro primero");
@@ -226,8 +205,5 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         });
-});
-
-
-
+    });
 });

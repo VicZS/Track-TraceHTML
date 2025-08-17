@@ -49,10 +49,8 @@ class ServidorThread(threading.Thread):
 
 def obtener_ruta_db():
     if getattr(sys, 'frozen', False):
-        # Si está congelado (ejecutándose como .exe)
         carpeta_ejecucion = os.path.dirname(sys.executable)
     else:
-        # Si está en modo script
         carpeta_ejecucion = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(carpeta_ejecucion, "database.db")
 
@@ -60,11 +58,16 @@ def inicializar_db():
     try:
         conn = sqlite3.connect(obtener_ruta_db())
         c = conn.cursor()
-        c.execute("""CREATE TABLE IF NOT EXISTS usuarios (
+        c.execute("""CREATE TABLE IF NOT EXISTS registro (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT,
-            apellido TEXT,
-            edad INTEGER
+            fecha TEXT,
+            tipoCamion TEXT,
+            tarimas INTEGER,
+            proveedor TEXT,
+            eslingas TEXT,
+            turno TEXT,
+            almacenista TEXT,
+            comentarios TEXT
         )""")
         conn.commit()
         conn.close()
@@ -79,14 +82,19 @@ class ManejadorPersonalizado(http.server.SimpleHTTPRequestHandler):
             try:
                 conn = sqlite3.connect(obtener_ruta_db())
                 c = conn.cursor()
-                c.execute("""CREATE TABLE IF NOT EXISTS usuarios (
+                c.execute("""CREATE TABLE IF NOT EXISTS registro (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nombre TEXT,
-                    apellido TEXT,
-                    edad INTEGER
+                    fecha TEXT,
+                    tipoCamion TEXT,
+                    tarimas INTEGER,
+                    proveedor TEXT,
+                    eslingas TEXT,
+                    turno TEXT,
+                    almacenista TEXT,
+                    comentarios TEXT
                 )""")
-                c.execute("INSERT INTO usuarios (nombre, apellido, edad) VALUES (?, ?, ?)",
-                          (datos["nombre"], datos["apellido"], datos["edad"]))
+                c.execute("INSERT INTO registro (fecha, tipoCamion, tarimas, proveedor, eslingas, turno, almacenista, comentarios) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                          (datos['fecha'], datos['tipoCamion'], datos['tarimas'], datos['proveedor'], datos['eslingas'], datos['turno'], datos['almacenista'], datos['comentarios']))
                 conn.commit()
                 conn.close()
                 self.send_response(200)
@@ -97,17 +105,17 @@ class ManejadorPersonalizado(http.server.SimpleHTTPRequestHandler):
                 traceback.print_exc(file=sys.stderr)
 
     def do_GET(self):
-        if self.path == "/usuarios":
+        if self.path == "/registros":
             try:
                 conn = sqlite3.connect(obtener_ruta_db())
                 c = conn.cursor()
-                c.execute("SELECT nombre, apellido, edad FROM usuarios")
-                usuarios = [{"nombre": n, "apellido": a, "edad": e} for n, a, e in c.fetchall()]
+                c.execute("SELECT id, fecha, tipoCamion, tarimas, proveedor, eslingas, turno, almacenista, comentarios FROM registro")
+                registros = [{"id": id, "fecha": fecha, "tipoCamion": tipoCamion, "tarimas": tarimas, "proveedor": proveedor, "eslingas": eslingas, "turno": turno, "almacenista": almacenista, "comentarios": comentarios} for id, fecha, tipoCamion, tarimas, proveedor, eslingas, turno, almacenista, comentarios in c.fetchall()]
                 conn.close()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
-                self.wfile.write(json.dumps(usuarios).encode())
+                self.wfile.write(json.dumps(registros).encode())
             except Exception as e:
                 self.send_response(500)
                 self.end_headers()
@@ -134,6 +142,7 @@ def salir(icono, item):
     sys.exit()
 
 # Iniciar servidor
+inicializar_db()
 servidor = ServidorThread()
 servidor.start()
 

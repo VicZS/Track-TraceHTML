@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registroForm');
     const crearBtn = document.getElementById('crearRegistroBtn');
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     espacios = configCamiones[tipo].espacios;
     const maxTarimas = espacios * 3;
 
-    tarimasInput.value = ''; // <- Reinicia el campo
+    tarimasInput.value = ''; 
     tarimasInput.max = maxTarimas;
 
     capacidadMaximaLabel.textContent = configCamiones[tipo].capacidad + ' KG';
@@ -97,13 +96,41 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        alert('Registro creado exitosamente');
-        form.reset();
-        panelCamion.innerHTML = '';
-        capacidadOcupadaLabel.textContent = '0/0';
-        capacidadMaximaLabel.textContent = '0 KG';
-        crearBtn.disabled = true;
-        deshabilitarInputs();
+        const data = {
+            fecha: document.getElementById('fecha').value,
+            tipoCamion: tipoCamionSelect.value,
+            tarimas: parseInt(tarimasInput.value) || 0,
+            proveedor: proveedorInput.value,
+            eslingas: eslingasInput.value,
+            turno: turnoInput.value,
+            almacenista: almacenistaInput.value,
+            comentarios: comentariosInput.value,
+        };
+
+        fetch('/guardar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Error en el servidor');
+            return res.text();
+        })
+        .then(() => {
+            alert('Registro creado exitosamente');
+            form.reset();
+            panelCamion.innerHTML = '';
+            capacidadOcupadaLabel.textContent = '0/0';
+            capacidadMaximaLabel.textContent = '0 KG';
+            crearBtn.disabled = true;
+            deshabilitarInputs();
+        })
+        .catch(error => {
+            console.error('Error al guardar:', error);
+            alert('Hubo un problema al guardar el registro');
+        });
     });
 
     function deshabilitarInputs() {

@@ -1,0 +1,1 @@
+pyinstaller --noconsole --onefile --icon=icon.ico --add-data "index.html;." --add-data "RealizarRegistro.html;." --add-data "VerRegistros.html;." --add-data "formulariotest.html;." --add-data "JS;JS" --add-data "Multimedia;Multimedia" --add-data "SQLite/sqlite3.exe;SQLite" servidorTrackTrace.py
