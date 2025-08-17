@@ -10,14 +10,13 @@ const registroSelect = document.getElementById('registroSelect');
 
     let registros = [];
 
-    // 🔄 Cargar registros desde el backend
     fetch('/registros')
         .then(res => {
             if (!res.ok) throw new Error('Error al obtener registros');
             return res.json();
         })
         .then(data => {
-            registros = data.map((r, i) => ({ id: i + 1, ...r })); // Asignar ID si no viene
+            registros = data.map((r, i) => ({ id: i + 1, ...r })); 
             rellenarSelect(registros);
         })
         .catch(error => {
@@ -206,4 +205,171 @@ const registroSelect = document.getElementById('registroSelect');
             window.URL.revokeObjectURL(url);
         });
     });
+
+    // Referencias
+    const filtroReporte = document.getElementById("filtroReporte");
+    const filtrosRango = document.getElementById("filtrosRango");
+    const generarReporteExcel = document.getElementById("generarReporteExcel");
+    const fechaInicio = document.getElementById("fechaInicio");
+    const fechaFin = document.getElementById("fechaFin");
+
+    // Mostrar/Ocultar filtros según selección
+    filtroReporte.addEventListener("change", () => {
+        if (filtroReporte.value === "rango") {
+            filtrosRango.style.display = "flex"; // mostrar inputs de fecha
+            generarReporteExcel.disabled = true; // esperar a que se elijan fechas
+        } else if (filtroReporte.value !== "") {
+            filtrosRango.style.display = "none";
+            generarReporteExcel.disabled = false; // habilitar el botón
+        } else {
+            filtrosRango.style.display = "none";
+            generarReporteExcel.disabled = true;
+        }
+    });
+
+    // Validar fechas en rango
+    function validarRango() {
+        if (fechaInicio.value && fechaFin.value) {
+            generarReporteExcel.disabled = false;
+        } else {
+            generarReporteExcel.disabled = true;
+        }
+    }
+
+    fechaInicio.addEventListener("change", validarRango);
+    fechaFin.addEventListener("change", validarRango);
+
+
+    function parseFecha(fechaStr) {
+        // Aseguramos formato YYYY-MM-DD
+        const [year, month, day] = fechaStr.split("-").map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function filtrarRegistrosPorFecha() {
+        const hoy = new Date();
+        let inicio, fin;
+
+        switch (filtroReporte.value) {
+            case "dia":
+                inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+                fin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+                break;
+
+            case "semana":
+                const primerDia = new Date(hoy);
+                primerDia.setDate(hoy.getDate() - hoy.getDay()); // domingo
+                inicio = new Date(primerDia.getFullYear(), primerDia.getMonth(), primerDia.getDate(), 0, 0, 0);
+                fin = new Date(inicio);
+                fin.setDate(inicio.getDate() + 6);
+                fin.setHours(23,59,59);
+                break;
+
+            case "mes":
+                inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1, 0, 0, 0);
+                fin = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0, 23, 59, 59);
+                break;
+
+            case "rango":
+                const iniStr = document.getElementById("fechaInicio").value;
+                const finStr = document.getElementById("fechaFin").value;
+                if (!iniStr || !finStr) return [];
+                inicio = parseFecha(iniStr);
+                fin = parseFecha(finStr);
+                fin.setHours(23,59,59);
+                break;
+
+            default:
+                return [];
+        }
+
+        return registros.filter(r => {
+            const fechaR = parseFecha(r.fecha);
+            return fechaR >= inicio && fechaR <= fin;
+        }).sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); // orden descendente
+    }
+
+    generarReporteExcel.addEventListener("click", function () {
+        const registrosFiltrados = filtrarRegistrosPorFecha();
+        if (registrosFiltrados.length === 0) return alert("No hay registros para este rango");
+
+        // 🔹 Definir nombre de archivo
+        const hoy = new Date();
+        let nombreArchivo = "Reporte";
+        const opcionesMes = { month: "long" };
+        const opcionesDia = { day: "2-digit", month: "2-digit", year: "numeric" };
+
+        switch (filtroReporte.value) {
+            case "dia":
+                nombreArchivo = `Reporte del dia ${hoy.toLocaleDateString("es-MX", opcionesDia)}`;
+                break;
+            case "semana":
+                const numeroSemana = Math.ceil(((hoy - new Date(hoy.getFullYear(),0,1)) / 86400000 + new Date(hoy.getFullYear(),0,1).getDay()+1) / 7);
+                nombreArchivo = `Reporte de la semana ${numeroSemana}`;
+                break;
+            case "mes":
+                nombreArchivo = `Reporte del mes de ${hoy.toLocaleDateString("es-MX", opcionesMes)} de ${hoy.getFullYear()}`;
+                break;
+            case "rango":
+                const iniStr = document.getElementById("fechaInicio").value;
+                const finStr = document.getElementById("fechaFin").value;
+                const iniFecha = parseFecha(iniStr).toLocaleDateString("es-MX", opcionesDia);
+                const finFecha = parseFecha(finStr).toLocaleDateString("es-MX", opcionesDia);
+                nombreArchivo = `Reporte del dia ${iniFecha} al dia ${finFecha}`;
+                break;
+        }
+
+        XlsxPopulate.fromBlankAsync()
+            .then(workbook => {
+                const sheet = workbook.sheet("Sheet1");
+
+                // Encabezados
+                const headers = ["ID", "Fecha", "Tipo de Camión", "Tarimas Enviadas", "Proveedor", "Eslingas", "Turno", "Almacenista", "Comentarios", "Porcentaje Ocupación"];
+                headers.forEach((h, i) => {
+                    const cell = sheet.cell(1, i + 1);
+                    cell.value(h).style({ bold: true, horizontalAlignment: "center", border: true });
+                });
+
+                // Filas
+                registrosFiltrados.forEach((registro, idx) => {
+                    const fila = idx + 2;
+                    const capacidad = (configCamiones[registro.tipoCamion]?.espacios || 1) * 3; // 🔹 considerar 3 niveles
+                    const porcentaje = ((registro.tarimas / capacidad) * 100).toFixed(2) + "%";
+
+                    const valores = [
+                        registro.id,
+                        registro.fecha,
+                        registro.tipoCamion,
+                        registro.tarimas,
+                        registro.proveedor,
+                        registro.eslingas,
+                        registro.turno,
+                        registro.almacenista,
+                        registro.comentarios || "-",
+                        porcentaje
+                    ];
+
+                    valores.forEach((valor, col) => {
+                        sheet.cell(fila, col + 1).value(valor).style({ border: true, horizontalAlignment: "center" });
+                    });
+                });
+
+                headers.forEach((_, i) => sheet.column(i + 1).width(22));
+
+                return workbook.outputAsync();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${nombreArchivo}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            });
+    });
+
+
+
 });

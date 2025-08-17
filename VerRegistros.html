@@ -5,40 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ver Registros</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <script src="https://unpkg.com/xlsx-populate/browser/xlsx-populate.min.js"></script>
-
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-light mb-4 shadow-sm">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-            <!-- Logo principal -->
             <div class="d-flex align-items-center">
                 <img src="./multimedia/iconos/documentos.png" alt="Logo" class="me-3" style="width:48px; height:48px;">
                 <h2>Registros Realizados</h2>
             </div>
-
             <a href="./index.html" class="btn btn-outline-secondary d-flex align-items-center">
                 <img src="./multimedia/iconos/volver.png" alt="Volver" style="width:24px; height:24px;">
                 <span class="ms-2">Volver</span>
             </a>
-            
         </div>
     </nav>
-
     <div class="container mt-4">
         <div class="container mb-5">
+
+            <div class="mb-4">
+
             <div class="mb-4">
             <label for="registroSelect" class="form-label">Selecciona un registro:</label>
             <select class="form-select" id="registroSelect">
                 <option value="">Seleccionar...</option>
             </select>
+
+            <label for="filtroReporte" class="form-label">Generar Reporte:</label>
+            <select class="form-select" id="filtroReporte">
+                <option value="">Seleccionar...</option>
+                <option value="dia">Del Día de Hoy</option>
+                <option value="semana">De esta Semana</option>
+                <option value="mes">De este Mes</option>
+                <option value="rango">Por Rango</option>
+            </select>
             </div>
 
+            <div id="filtrosRango" class="row g-2 mb-4" style="display:none;">
+            <div class="col">
+                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                <input type="date" id="fechaInicio" class="form-control">
+            </div>
+            <div class="col">
+                <label for="fechaFin" class="form-label">Fecha Fin</label>
+                <input type="date" id="fechaFin" class="form-control">
+            </div>
+            </div>
+
+            <button class="btn btn-success" id="generarReporteExcel" disabled>Generar Reporte Excel</button>
+            
+
+            </div>
             <div id="detalleRegistro" style="display: none;"> 
             <div class="mb-3"><strong>Fecha:</strong> <span id="infoFecha"></span></div>
             <div class="mb-3"><strong>Tipo de Camión:</strong> <span id="infoTipoCamion"></span></div>
@@ -48,22 +68,17 @@
             <div class="mb-3"><strong>Turno:</strong> <span id="infoTurno"></span></div>
             <div class="mb-3"><strong>Almacenista:</strong> <span id="infoAlmacenista"></span></div>
             <div class="mb-3"><strong>Comentarios:</strong> <span id="infoComentarios"></span></div>
-
             <div class="d-flex align-items-center mt-4">
                 <img src="./multimedia/img/CabinaCamion.png" alt="Cabina del Camión" style="height: 100px;">
                 <div id="panelCamion" class="ms-2"></div>
             </div>
             </div>
         </div>
-
     </div>
-
     <div class="mt-4 mb-5 d-flex gap-3 justify-content-end p-1"  >
     <button class="btn btn-danger" id="exportarPDF" disabled>Exportar como PDF</button>
     <button class="btn btn-success" id="exportarExcel" disabled>Exportar como Excel</button>
     </div>
-
 <script src="./JS/VerRegistros.js"></script>
-    
 </body>
 </html>
