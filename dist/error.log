@@ -1,0 +1,54 @@
+127.0.0.1 - - [17/Aug/2025 11:43:40] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:43:40] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:43:46] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:43:46] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:43:47] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [17/Aug/2025 11:43:47] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:43:47] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:43:48] "GET /formulariotest.html HTTP/1.1" 200 -
+127.0.0.1 - - [17/Aug/2025 11:43:48] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:43:48] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:43:48] "GET /JS/formulariotest.js HTTP/1.1" 200 -
+127.0.0.1 - - [17/Aug/2025 11:43:49] "GET /usuarios HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "servidorTrackTrace.py", line 106, in do_GET
+sqlite3.OperationalError: no such table: usuarios
+127.0.0.1 - - [17/Aug/2025 11:43:55] "POST /guardar HTTP/1.1" 200 -
+127.0.0.1 - - [17/Aug/2025 11:43:55] "GET /usuarios HTTP/1.1" 200 -
+127.0.0.1 - - [17/Aug/2025 11:44:24] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:44:24] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:44:24] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:44:24] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:44:25] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:44:25] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:44:26] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:44:26] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:44:26] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:44:26] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:44:26] "GET /formulariotest.html HTTP/1.1" 304 -
+127.0.0.1 - - [17/Aug/2025 11:44:27] "GET /JS/formulariotest.js HTTP/1.1" 304 -
+127.0.0.1 - - [17/Aug/2025 11:44:27] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:44:27] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:44:27] "GET /usuarios HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:51] code 404, message File not found
+192.168.1.80 - - [17/Aug/2025 11:44:51] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.1.80 - - [17/Aug/2025 11:44:53] "GET /RealizarRegistro.html HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:53] "GET /multimedia/iconos/registro-en-linea.png HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:53] "GET /multimedia/iconos/volver.png HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:53] "GET /multimedia/img/CabinaCamion.png HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:53] "GET /JS/RealizarRegistro.js HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:54] "GET /index.html HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:54] "GET /multimedia/img/IconoCamion.ico HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:54] "GET /multimedia/iconos/documentos.png HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:55] "GET /formulariotest.html HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:55] "GET /JS/formulariotest.js HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:55] "GET /usuarios HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:44:57] "GET /formulariotest.html HTTP/1.1" 304 -
+192.168.1.80 - - [17/Aug/2025 11:44:57] "GET /usuarios HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:45:09] "POST /guardar HTTP/1.1" 200 -
+192.168.1.80 - - [17/Aug/2025 11:45:09] "GET /usuarios HTTP/1.1" 200 -
+127.0.0.1 - - [17/Aug/2025 11:45:14] "GET /formulariotest.html HTTP/1.1" 304 -
+127.0.0.1 - - [17/Aug/2025 11:45:14] code 404, message File not found
+127.0.0.1 - - [17/Aug/2025 11:45:14] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [17/Aug/2025 11:45:15] "GET /JS/formulariotest.js HTTP/1.1" 304 -
+127.0.0.1 - - [17/Aug/2025 11:45:15] "GET /usuarios HTTP/1.1" 200 -

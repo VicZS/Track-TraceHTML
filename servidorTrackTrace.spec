@@ -5,7 +5,7 @@ a = Analysis(
     ['servidorTrackTrace.py'],
     pathex=[],
     binaries=[],
-    datas=[('index.html', '.'), ('RealizarRegistro.html', '.'), ('VerRegistros.html', '.'), ('JS', 'JS'), ('Multimedia', 'Multimedia')],
+    datas=[('index.html', '.'), ('RealizarRegistro.html', '.'), ('VerRegistros.html', '.'), ('formulariotest.html', '.'), ('JS', 'JS'), ('Multimedia', 'Multimedia'), ('SQLite/sqlite3.exe', 'SQLite')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
