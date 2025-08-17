@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-const registroSelect = document.getElementById('registroSelect');
+    const registroSelect = document.getElementById('registroSelect');
     const detalle = document.getElementById('detalleRegistro');
     const configCamiones = {
         "CAM 3.5": { espacios: 6 },
@@ -16,7 +16,9 @@ const registroSelect = document.getElementById('registroSelect');
             return res.json();
         })
         .then(data => {
-            registros = data.map((r, i) => ({ id: i + 1, ...r })); 
+            // 🔹 Ordenar descendente (fecha más reciente primero)
+            registros = data.map((r, i) => ({ id: i + 1, ...r }))
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
             rellenarSelect(registros);
         })
         .catch(error => {
@@ -38,7 +40,7 @@ const registroSelect = document.getElementById('registroSelect');
         const selectedIndex = this.value;
         if (selectedIndex === '') {
             detalle.style.display = 'none';
-            document.getElementById('exportarPDF').disabled = true;
+            // document.getElementById('exportarPDF').disabled = true;
             document.getElementById('exportarExcel').disabled = true;
             return;
         }
@@ -57,7 +59,7 @@ const registroSelect = document.getElementById('registroSelect');
 
         generarVisualizacionCamion(configCamiones[registro.tipoCamion].espacios, parseInt(registro.tarimas));
 
-        document.getElementById('exportarPDF').disabled = false;
+        // document.getElementById('exportarPDF').disabled = false;
         document.getElementById('exportarExcel').disabled = false;
     });
 
@@ -120,85 +122,45 @@ const registroSelect = document.getElementById('registroSelect');
         }
         panelCamion.appendChild(grid);
     }
-    document.getElementById("exportarPDF").addEventListener("click", async function () {
-        const { jsPDF } = window.jspdf;
+    
 
-        const doc = new jsPDF();
-        const selectedIndex = registroSelect.value;
-        if (selectedIndex === '') return alert("Selecciona un registro primero");
+    // 🔹 Exportar un solo registro en formato uniforme
+    function exportarRegistroExcel(registro) {
+        const capacidad = (configCamiones[registro.tipoCamion]?.espacios || 1) * 3;
+        const porcentaje = ((registro.tarimas / capacidad) * 100).toFixed(2) + "%";
 
-        const registro = registros[selectedIndex];
-        let y = 10;
+        const headers = ["ID", "Fecha", "Tipo de Camión", "Tarimas Enviadas", "Proveedor", "Eslingas", "Turno", "Almacenista", "Comentarios", "Porcentaje Ocupación"];
+        const valores = [
+            registro.id,
+            registro.fecha,
+            registro.tipoCamion,
+            registro.tarimas,
+            registro.proveedor,
+            registro.eslingas,
+            registro.turno,
+            registro.almacenista,
+            registro.comentarios || "-",
+            porcentaje
+        ];
 
-        doc.setFontSize(12);
-        doc.text(`ID: ${registro.id}`, 10, y += 10);
-        doc.text(`Fecha: ${registro.fecha}`, 10, y += 10);
-        doc.text(`Tipo de Camión: ${registro.tipoCamion}`, 10, y += 10);
-        doc.text(`Tarimas: ${registro.tarimas}`, 10, y += 10);
-        doc.text(`Proveedor: ${registro.proveedor}`, 10, y += 10);
-        doc.text(`Eslingas: ${registro.eslingas}`, 10, y += 10);
-        doc.text(`Turno: ${registro.turno}`, 10, y += 10);
-        doc.text(`Almacenista: ${registro.almacenista}`, 10, y += 10);
-        const comentarioTexto = `Comentarios: ${registro.comentarios || "-"}`;
-        const comentarioAnchoMaximo = 180; // ancho en mm
-        const lineasComentario = doc.splitTextToSize(comentarioTexto, comentarioAnchoMaximo);
-        doc.text(lineasComentario, 10, y += 10);
-        y += lineasComentario.length * 7;
-
-        if (y > 250) { 
-            doc.addPage();
-            y = 10;
-        }
-        const camionContainer = document.querySelector("#detalleRegistro .d-flex");
-        await html2canvas(camionContainer).then(canvas => {
-            const imgData = canvas.toDataURL("image/png");
-            const imgWidth = 180;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            doc.addImage(imgData, 'PNG', 10, y + 10, imgWidth, imgHeight);
-            doc.save(`Registro_ID${registro.id}_${registro.fecha}.pdf`);
+        return XlsxPopulate.fromBlankAsync().then(workbook => {
+            const sheet = workbook.sheet("Sheet1");
+            headers.forEach((h, i) => sheet.cell(1, i + 1).value(h).style({ bold: true, border: true, horizontalAlignment: "center" }));
+            valores.forEach((v, i) => sheet.cell(2, i + 1).value(v).style({ border: true, horizontalAlignment: "center" }));
+            headers.forEach((_, i) => sheet.column(i + 1).width(22));
+            return workbook.outputAsync();
         });
-    });
+    }
 
     document.getElementById("exportarExcel").addEventListener("click", function () {
-    const selectedIndex = registroSelect.value;
-    if (selectedIndex === '') return alert("Selecciona un registro primero");
-
-    const registro = registros[selectedIndex];
-    const nombreBase = `Registro_ID${registro.id}_${registro.fecha}`;
-
-    XlsxPopulate.fromBlankAsync()
-        .then(workbook => {
-            const sheet = workbook.sheet("Sheet1");
-
-            const datos = [
-                ["ID", registro.id],
-                ["Fecha", registro.fecha],
-                ["Tipo de Camión", registro.tipoCamion],
-                ["Tarimas Enviadas", registro.tarimas],
-                ["Proveedor", registro.proveedor],
-                ["Eslingas", registro.eslingas],
-                ["Turno", registro.turno],
-                ["Almacenista", registro.almacenista],
-                ["Comentarios", registro.comentarios || "-"]
-            ];
-
-            datos.forEach(([clave, valor], i) => {
-                const fila = i + 1;
-                sheet.cell(`A${fila}`).value(clave).style({ bold: true, horizontalAlignment: "center", border: true });
-                sheet.cell(`B${fila}`).value(valor).style({ horizontalAlignment: "justify", border: true });
-            });
-
-            sheet.column("A").width(20);
-            sheet.column("B").width(40);
-
-            return workbook.outputAsync();
-        })
-        .then(blob => {
+        const selectedIndex = registroSelect.value;
+        if (selectedIndex === '') return alert("Selecciona un registro primero");
+        const registro = registros[selectedIndex];
+        exportarRegistroExcel(registro).then(blob => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${nombreBase}.xlsx`;
+            a.download = `Reporte del dia ${registro.fecha}.xlsx`; // 🔹 nombre uniforme
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
