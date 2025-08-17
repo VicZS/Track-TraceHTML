@@ -25,14 +25,8 @@
     </nav>
     <div class="container mt-4">
         <div class="container mb-5">
-
-            <div class="justify-content-end">
-            <button class="btn btn-success" id="exportarTodosExcel">Generar Reporte de Todos los Registros</button>
-            </div>
-
             <div class="mb-4">
                 
-
             <label for="filtroReporte" class="form-label">Generar Reporte:</label>
             <select class="form-select" id="filtroReporte">
                 <option value="">Seleccionar...</option>
@@ -54,9 +48,8 @@
             </div>
             </div>
 
-            <button class="btn btn-success" id="generarReporteExcel" disabled>Generar Reporte Excel</button>
+            <button class="btn btn-outline-success" id="generarReporteExcel" disabled>Generar Reporte Excel</button>
             
-
             <div class="mb-4">
             <label for="registroSelect" class="form-label">Selecciona un registro:</label>
             <select class="form-select" id="registroSelect">
@@ -81,7 +74,8 @@
         </div>
     </div>
     <div class="mt-4 mb-5 d-flex gap-3 justify-content-end p-1"  >
-    <button class="btn btn-success" id="exportarExcel" disabled>Exportar como Excel</button>
+    <button class="btn btn-outline-success" id="exportarExcel" disabled>Exportar Registro Seleccionado como Excel</button>
+    <button class="btn btn-outline-success" id="exportarTodosExcel">Generar Reporte de Todos los Registros</button>
     </div>
 <script src="./JS/VerRegistros.js"></script>
 </body>
